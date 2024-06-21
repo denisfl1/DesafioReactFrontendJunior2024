@@ -1,0 +1,53 @@
+*{
+    margin: 0;
+}
+
+section{
+    background-color: #F5F5F5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    
+
+}
+
+section > h1{
+    color:#B83F45;
+    font-size: 60px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 80px;
+    font-weight: lighter;
+}
+
+.inputContainer input::placeholder{
+    font-style: italic;
+}
+
+.inputContainer{
+    width: 500px;
+}
+
+.inputContainer input{
+    width: 100%;
+}
+
+li{
+    list-style: none;
+}
+
+.search_li{
+    background-color: #ffffff;
+}
+
+.container_status{
+    display: flex;
+    justify-content: space-around;
+}
+
+.footer_credits li{
+line-height: 25px;
+}
+
+
+
