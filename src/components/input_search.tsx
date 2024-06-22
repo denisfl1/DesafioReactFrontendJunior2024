@@ -14,37 +14,44 @@ const InputSearch = ()=>{
         map:(data:any)=>void
     }
     
+    let test:any = []
 
     const[search,setSeach] = useState()
-    const [data,setData] = useState<any>([
-            {
-              id: "flrGI",
-              title: "Lavar os pratos",
-              isDone: false
-            },
-            {
-              id:"Tw-I9",
-              title: "Cortar a grama",
-              isDone: true
-            },
-            {
-              id: "7f2sf",
-              title: "Comprar pão",
-              isDone: false
-            }
-          ])
+    const [data,setData] = useState<any>([])
+
+    const mydata = [
+        {
+          id: "flrGI",
+          title: "Lavar os pratos",
+          isDone: false
+        },
+        {
+          id:"Tw-I9",
+          title: "Cortar a grama",
+          isDone: true
+        },
+        {
+          id: "7f2sf",
+          title: "Comprar pão",
+          isDone: false
+        }
+      ]
 
     useEffect(()=>{
 
+        setData(mydata)
+
     },[])
+
 
     const HandleCheck=(id:string,parameter:boolean)=>{
         
         alert(parameter)
         
-        
+
 
     }
+
 
 return(
     
@@ -53,14 +60,15 @@ return(
         <div className="container_search_select">
            <ul className="search_li">
                 {data.map((items:object_Data)=>{
+                    !items.isDone && test.push(items.isDone)
                     return(
                         <>
-                         <li className={`${items.id}`}><img onClick={()=>HandleCheck(items.id,!items.isDone)} src={items.isDone ? check : uncheck}></img>{items.title}</li>                   
+                         <li className={`${items.id, items.isDone && 'isDone'}`}><img onClick={()=>HandleCheck(items.id,!items.isDone)} src={items.isDone ? check : uncheck}></img>{items.title}</li>                   
                         </>
                     )
                 })}
             </ul>
-            <div className="container_status">   <span style={{marginLeft:'-20px'}}>{`${1} item left`}</span>  <div className="container_select_option"> <div className="select_span"><span>All</span></div>  <div className="select_span selected"><span>Active</span></div>   <div className="select_span"><span>Completed</span></div></div> <span className="clear_completed">Clear Completed</span></div>
+            <div className="container_status">   <span style={{marginLeft:'-20px'}}>{`${test.length} item left`}</span>  <div className="container_select_option"> <div className="select_span"><span>All</span></div>  <div className="select_span selected"><span>Active</span></div>   <div className="select_span"><span>Completed</span></div></div> <span className="clear_completed">Clear Completed</span></div>
         </div>
     </div>
     
