@@ -44,11 +44,11 @@ const InputSearch = ()=>{
     },[])
 
 
-    const HandleCheck=(id:string)=>{
+    const HandleCheck=(id:string,parameter:boolean)=>{
 
         setData((prev:object_Data)=>
             prev.map((it:object_Data)=>
-                it.id == id ? {...it,isDone:!it.isDone}:it
+                it.id == id ? {...it,isDone:parameter}:it
             )
         )
 
@@ -67,7 +67,7 @@ return(
                     !items.isDone && test.push(items.isDone)
                     return(
                         <>
-                         <li className={`${items.id, items.isDone && 'isDone'}`}><img onClick={()=>HandleCheck(items.id,index)} src={items.isDone ? check : uncheck}></img>{items.title}</li>                   
+                         <li className={`${items.id, items.isDone && 'isDone'}`}><img onClick={()=>HandleCheck(items.id,!items.isDone)} src={items.isDone ? check : uncheck}></img>{items.title}</li>                   
                         </>
                     )
                 })}

@@ -80,11 +80,6 @@ li{
     list-style: none;
 }
 
-.isDone{
-    text-decoration: line-through;
-    color:#949494
-}
-
 .search_li{
     background-color: #ffffff;
     padding-inline-start: 0;
@@ -100,7 +95,6 @@ li{
    line-height: 50px;
    align-items: center;
    display: flex;
-   font-size: 24px;
 }
 
 
