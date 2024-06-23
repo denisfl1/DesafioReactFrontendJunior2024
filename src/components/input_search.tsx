@@ -44,13 +44,17 @@ const InputSearch = ()=>{
     },[])
 
 
-    const HandleCheck=(id:string,parameter:boolean)=>{
-        
-        alert(parameter)
-        
+    const HandleCheck=(id:string)=>{
 
+        setData((prev:object_Data)=>
+            prev.map((it:object_Data)=>
+                it.id == id ? {...it,isDone:!it.isDone}:it
+            )
+        )
 
     }
+
+
 
 
 return(
@@ -59,11 +63,11 @@ return(
         <div className="inputContainer"><img className="down_unclicked" src={down_unclicked}></img><input placeholder="What needs to be done?"></input></div>
         <div className="container_search_select">
            <ul className="search_li">
-                {data.map((items:object_Data)=>{
+                {data.map((items:object_Data,index:number)=>{
                     !items.isDone && test.push(items.isDone)
                     return(
                         <>
-                         <li className={`${items.id, items.isDone && 'isDone'}`}><img onClick={()=>HandleCheck(items.id,!items.isDone)} src={items.isDone ? check : uncheck}></img>{items.title}</li>                   
+                         <li className={`${items.id, items.isDone && 'isDone'}`}><img onClick={()=>HandleCheck(items.id,index)} src={items.isDone ? check : uncheck}></img>{items.title}</li>                   
                         </>
                     )
                 })}
