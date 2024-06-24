@@ -80,12 +80,17 @@ li{
     list-style: none;
 }
 
+.isDone{
+    text-decoration: line-through;
+    color: #bababa;
+}
 .search_li{
     background-color: #ffffff;
     padding-inline-start: 0;
+    position: relative;
 }
 
-.search_li img{
+.done_undone{
     width: 30px;
     margin-left: 10px;
     margin-right: 15px;
@@ -95,6 +100,21 @@ li{
    line-height: 50px;
    align-items: center;
    display: flex;
+}
+
+.search_li li .clear{
+    opacity: 0;
+}
+
+.search_li li:hover .clear{
+    opacity: 1;
+}
+
+.clear{
+    right:15px;
+    position:absolute;
+    width: 24px;
+   
 }
 
 
@@ -110,6 +130,10 @@ li{
     margin-left: 0px;
 }
 
+.container_status span:last-child:hover{
+    cursor: pointer;
+}
+
 .footer_credits{
     margin: auto;
     margin-top: 30px;
@@ -123,6 +147,7 @@ li{
 
 .footer_credits span:hover{
     border-bottom: 1px solid black;
+    cursor: pointer;
 }
 
 
