@@ -7,6 +7,7 @@ import down_active from "../images/down-black.png"
 import {useEffect, useState } from "react"
 
 
+
 const InputSearch = ()=>{
 
     interface Data_types{
@@ -19,17 +20,17 @@ const InputSearch = ()=>{
     
     let items_left:boolean[] = []
     let items_done:string[] = []
-    
+
     const [inputText,setInputText] = useState<string>('')
     const [data,setData] = useState<any>([])
-    const [dataFiltered,setDataFiltered]= useState<Data_types[]>([])
-    const [count,setCount] = useState<number>(items_done.length)
     const [filter,setFilter] = useState<string|boolean>('all')
     const [borderClass,setBorderClass]= useState<string>('all')
     const [edit,setEdit]= useState<boolean>(false)
     const [id,setId] = useState<string>('')
     const [activeButton,setActiveButton]= useState<boolean>(false)
-
+    const isComplete=()=>{ return data.find((item:any)=>{return item.isDone})}
+    const dataFiltered = filter !== 'all' ? data.filter((its:Data_types)=>
+    {return its.isDone == filter}) : data
 
     const mydata = [
         {
@@ -52,23 +53,6 @@ const InputSearch = ()=>{
 
     useEffect(()=>{
 
-    setCount(items_done.length)
-       
-    if(filter !== 'all'){
-       setActiveButton(true)
-       return setDataFiltered(data.filter((its:Data_types)=>
-        {return its.isDone == filter}))
-    }
-        return  setDataFiltered(data)
-
-     
-
-    },[items_done,filter,data])
-
-   
-
-    useEffect(()=>{
-
 
         (async()=>{
 
@@ -79,8 +63,6 @@ const InputSearch = ()=>{
             )
 
         })()
-       
-
     
 
     },[])
@@ -115,8 +97,12 @@ const InputSearch = ()=>{
 
         if(search)return alert("Tarefa já existe!")
 
-       if(!edit)return setData((prev:Data_types[])=>[{id:randomId,title:inputText,isDone:false},...prev])
-
+       if(edit == false){
+       
+       setData((prev:Data_types[])=>[{id:randomId,title:inputText,isDone:false},...prev])
+        
+        }
+       
             setData((prev:Data_types[])=>prev.map(its=>its.id == id ?{...its,title:inputText}:its))
             setEdit(false)
             setId('')
@@ -125,21 +111,24 @@ const InputSearch = ()=>{
 
     const showSearch=()=>{
         
+        activeButton && setActiveButton(false)
 
         if(data.length>0){
-
-        setData((prev:Data_types)=>
+            setActiveButton(true)
+            setData((prev:Data_types)=>
             prev.map((it:Data_types)=>
                 it?{...it,isDone:true}:it
             )
-        )
 
+
+        )
+        
         }
-        if(count>1){
+        if(isComplete() && activeButton){
             setActiveButton(false)
             setData((prev:Data_types)=>
                 prev.map((it:Data_types)=>
-                    it?{...it,isDone:false}:it
+                   {return {...it,isDone:false}}
                 )
             )
         }
@@ -148,7 +137,7 @@ const InputSearch = ()=>{
     }
 
     const handleRemove=()=>{
-
+    
         items_done.forEach((ids:string)=>{
             
             setData((prev:Data_types)=>
@@ -160,7 +149,7 @@ const InputSearch = ()=>{
     }
 
     const handleFilter=(filterName:string|boolean,Class:string)=>{
-
+        setActiveButton(true)
         setFilter(filterName)
         setBorderClass(Class)
         
@@ -190,7 +179,7 @@ const InputSearch = ()=>{
 return(
     
     <div className="inputContainer_Master">
-        <div className="inputContainer">{<img onClick={showSearch} className={'down_arrow'} src={count >1 || activeButton? down_active : down_unclicked}></img>}<input value={inputText} onKeyDown={e=>e.key == "Enter" &&  AddList()} onChange={(e:any)=>setInputText(e.target.value)} placeholder="What needs to be done?"></input></div>
+        <div className="inputContainer">{<img onClick={showSearch} className={'down_arrow'} src={activeButton? down_active : down_unclicked}></img>}<input value={inputText} onKeyDown={e=>e.key == "Enter" &&  AddList()} onChange={(e:any)=>setInputText(e.target.value)} placeholder="What needs to be done?"></input></div>
         {data.length >0 ? <><div className={`container_search_select `} style={{borderTop:dataFiltered[0] ?'2px solid #f0f0f0':'3px solid #e2e2e2'}}>
            <ul className="search_li">
                 {dataFiltered && dataFiltered.map((items:Data_types)=>{
@@ -205,7 +194,7 @@ return(
                 })}
             </ul>
           
-            <div className="container_status" style={dataFiltered.length >0 ?{borderTop: '1px solid #cfcfcf'}:{}}> <div style={{marginLeft:'-15px',width:'100px'}}><span >{`${items_left.length} item${items_left.length >1 || items_left.length == 0 ?'s' : ''} left`}</span></div>  <div className="container_select_option"> <div onClick={(e:any)=>handleFilter('all','all')} className={"select_span"} style={{border:border_color('all')}}><span>All</span></div>  <div onClick={()=>handleFilter(false,'active')} className="select_span" style={{border:border_color('active')}}><span>Active</span></div>   <div onClick={()=>handleFilter(true,'completed')} className="select_span" style={{border:border_color('completed')}}><span>Completed</span></div></div> <span onClick={handleRemove} className={`clear_completed ${count > 0 ? ' show' : 'hide'}`}>Clear Completed</span></div>
+            <div className="container_status" style={dataFiltered.length >0 ?{borderTop: '1px solid #cfcfcf'}:{}}> <div style={{marginLeft:'-15px',width:'100px'}}><span >{`${items_left.length} item${items_left.length >1 || items_left.length == 0 ?'s' : ''} left`}</span></div>  <div className="container_select_option"> <div onClick={(e:any)=>handleFilter('all','all')} className={"select_span"} style={{border:border_color('all')}}><span>All</span></div>  <div onClick={()=>handleFilter(false,'active')} className="select_span" style={{border:border_color('active')}}><span>Active</span></div>   <div onClick={()=>handleFilter(true,'completed')} className="select_span" style={{border:border_color('completed')}}><span>Completed</span></div></div> <span onClick={handleRemove} className={`clear_completed ${items_done.length> 0? ' show' : 'hide'}`}>Clear Completed</span></div>
                 
         </div>
        <div className="paper1"></div>
