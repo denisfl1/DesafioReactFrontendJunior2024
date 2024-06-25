@@ -1,6 +1,7 @@
 import uncheck from "../images/unchecked.png"
 import check from "../images/checked.png"
 import clear from "../images/close.png"
+import editIcon from "../images/editar.png"
 import down_unclicked from "../images/down-gray.png"
 import down_active from "../images/down-black.png"
 import { useCallback, useEffect, useState } from "react"
@@ -22,8 +23,8 @@ const InputSearch = ()=>{
     
     const [inputText,setInputText] = useState('')
     const [data,setData] = useState<any>([])
+    const [dataFiltered,setDataFiltered]= useState<Data_types[]>([])
     const [count,setCount] = useState<number>(items_done.length)
-    const [search_li_open,setSearch_li_open] = useState(false)
     const [filter,setFilter] = useState<string|boolean>('all')
     const [borderClass,setBorderClass]= useState<string>('all')
     const [edit,setEdit]= useState({state:false,id:''})
@@ -47,20 +48,39 @@ const InputSearch = ()=>{
         }
       ]
 
-      const filtered = filter != 'all' ? data.filter((its:Data_types)=>{
-        return its.isDone == filter 
-     }):data
 
     useEffect(()=>{
     
+    for(const i in data){
+        if(data[i]['isDone']){
+            items_done.push(data[i]['id'])
+        }
+    }
     setCount(items_done.length)
        
+    if(filter !== 'all')return setDataFiltered(data.filter((its:Data_types)=>
+        {return its.isDone == filter}))
+        return  setDataFiltered(data)
 
-    },[items_done])
+      
+
+    },[items_done,filter])
 
    
 
     useEffect(()=>{
+
+
+        // (async()=>{
+
+        //     await fetch('https://my-json-server.typicode.com/EnkiGroup/DesafioReactFrontendJunior2024/todos').then(
+        //         response=>response.json().then(
+        //         DATAs=>setData(DATAs)).catch(
+        //         error=>console.log(error))
+        //     )
+
+        // })()
+       
 
       setData(mydata)
 
@@ -90,30 +110,27 @@ const InputSearch = ()=>{
 
         if(inputText === '')return
 
-        let randomId = Math.random().toString(36).substring(2, 9)
+        let randomId = Math.random().toString(36).substring(2,9)
         
-       if(!edit.state){
        for(const i in data){
 
-        if(!edit.state && data[i]['title'].toLowerCase() === inputText.toLowerCase())return alert("Tarefa já existe!")
+        if(data[i]['id'] !== edit.id && data[i]['title'].toLowerCase() === inputText.toLowerCase())return alert("Tarefa já existe!")
         
        }
+       if(!edit.state){
 
        while (data.some((item:Data_types)=>item.id === randomId)) {
         randomId = Math.random().toString(36).substring(2, 9)
        }
        
        setData((prev:Data_types[])=>[{id:randomId,title:inputText,isDone:false},...prev])
-
-        }else{
-            setData((prev:Data_types[])=>prev.map(its=>its.id == edit.id ?{...its,title:inputText}:its))
-            edit.state = false
-            edit.id = ''
+        
         }
+       
+            setData((prev:Data_types[])=>prev.map(its=>its.id == edit.id ?{...its,title:inputText}:its))
+            setEdit({state:false,id:''})
+        
 
-       setSearch_li_open(true)
-
-    
 
     },[inputText,data])
 
@@ -121,7 +138,7 @@ const InputSearch = ()=>{
     
 
         if(data.length>0){
-        setSearch_li_open(true)   
+
         setData((prev:Data_types)=>
             prev.map((it:Data_types)=>
                 it?{...it,isDone:true}:it
@@ -130,6 +147,7 @@ const InputSearch = ()=>{
 
         }
         if(count>1){
+  
             setData((prev:Data_types)=>
                 prev.map((it:Data_types)=>
                     it?{...it,isDone:false}:it
@@ -151,7 +169,7 @@ const InputSearch = ()=>{
             )   
 
         })    
-
+        
     }
 
     const handleFilter=(filterName:string|boolean,Class:string)=>{
@@ -163,44 +181,47 @@ const InputSearch = ()=>{
 
     const border_color=(name:string)=>{
 
-        if(borderClass == name)return'1px solid #B83F45'
+        if(borderClass == name){return'1px solid #ff9e81'}
 
     }
 
     const handleEdit=(id:string,nameEdit:string)=>{
 
         if(!edit.state){
-        edit.state = true
-        edit.id = id
-        setInputText(nameEdit)
+            setEdit({state:true,id:id})
+            setInputText(nameEdit)
         }else{
-            edit.state = false
-            edit.id = ''
+            setEdit({state:false,id:''})
             setInputText('')
         }
 
     }
 
-
 return(
     
     <div className="inputContainer_Master">
-        <div className="inputContainer">{<img onClick={showSearch} className={'down_arrow'} src={count >1? down_active : down_unclicked}></img>}<input value={inputText} onKeyDown={e=>e.key == "Enter" &&  AddList()} onChange={(e:any)=>setInputText(e.target.value)} placeholder="What needs to be done?"></input></div>
-        <div style={data.length>0 || search_li_open ?{display:'block'}:{display:'none'}} className="container_search_select">
+        <div className="inputContainer">{<img onClick={showSearch} className={'down_arrow'} src={count >1 ? down_active : down_unclicked}></img>}<input value={inputText} onKeyDown={e=>e.key == "Enter" &&  AddList()} onChange={(e:any)=>setInputText(e.target.value)} placeholder="What needs to be done?"></input></div>
+        {data.length >0 ? <><div className={`container_search_select `} style={{borderTop:dataFiltered[0] ?'2px solid #f0f0f0':'3px solid #e2e2e2'}}>
            <ul className="search_li">
-                {filtered.map((items:any)=>{
+                {dataFiltered && dataFiltered.map((items:Data_types)=>{
                     !items.isDone && items_left.push(items.isDone)
-                    items.isDone && items_done.push(items.id)
                 
                     return(
                         <>
-                         <li  className={`${items.id, items.isDone && 'isDone'}`} style={edit.id === items.id ?{backgroundColor:'#dcdcdc'}:{}}><img className="done_undone" onClick={()=>HandleChange('done_undone',items.id,!items.isDone)} src={items.isDone ? check : uncheck}></img>{<div style={{width:'100%'}} onDoubleClick={()=>handleEdit(items.id,items.title)}>{`${items.title}`}</div>}<img onClick={()=>HandleChange('remove',[items.id],null)} className="clear" src={clear}></img></li>                   
+                         <li  className={`${items.id, items.isDone && 'isDone'}`} style={edit.id === items.id ?{backgroundColor:'#dcdcdc'}:{}}><img className="done_undone" onClick={()=>HandleChange('done_undone',items.id,!items.isDone)} src={items.isDone ? check : uncheck}></img>{<div style={{width:'100%'}} onDoubleClick={()=>handleEdit(items.id,items.title)}>{`${items.title}`}</div>}<img onClick={()=>edit.id != items.id &&HandleChange('remove',items.id,null)} className={edit.id == items.id ?"edit" :"clear"} src={edit.id == items.id ?editIcon :clear}></img></li>                   
                         </>
                     )
                 })}
             </ul>
-            <div className="container_status">   <div style={{marginLeft:'-15px',width:'100px'}}><span >{`${items_left.length} item${items_left.length >1 || items_left.length == 0 ?'s' : ''} left`}</span></div>  <div className="container_select_option"> <div onClick={(e:any)=>handleFilter('all','all')} className={`select_span`} style={{border:border_color('all')}}><span>All</span></div>  <div onClick={(e:any)=>handleFilter(false,'active')} className="select_span" style={{border:border_color('active')}}><span>Active</span></div>   <div onClick={(e:any)=>handleFilter(true,'completed')} className="select_span" style={{border:border_color('completed')}}><span>Completed</span></div></div> <span onClick={handleRemove} className={`${ items_done.length > 0 ? 'clear_completed show' : 'clear_completed hide'}`}>Clear Completed</span></div>
+          
+            <div className="container_status" style={dataFiltered.length >0 ?{borderTop: '1px solid #cfcfcf'}:{}}> <div style={{marginLeft:'-15px',width:'100px'}}><span >{`${items_left.length} item${items_left.length >1 || items_left.length == 0 ?'s' : ''} left`}</span></div>  <div className="container_select_option"> <div onClick={(e:any)=>handleFilter('all','all')} className={"select_span"} style={{border:border_color('all')}}><span>All</span></div>  <div onClick={()=>handleFilter(false,'active')} className="select_span" style={{border:border_color('active')}}><span>Active</span></div>   <div onClick={()=>handleFilter(true,'completed')} className="select_span" style={{border:border_color('completed')}}><span>Completed</span></div></div> <span onClick={handleRemove} className={`clear_completed ${count > 0 ? ' show' : 'hide'}`}>Clear Completed</span></div>
+                
         </div>
+       <div className="paper1"></div>
+       <div className="paper2"></div>
+       </>:<></>}
+       
+
     </div>
     
 

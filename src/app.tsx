@@ -8,9 +8,14 @@ export default function App() {
 
       <div className="content">
       <h1>todos</h1>
+      <div className="todoBackground">
+        <div className='todoBackground2'>
       <InputSearch></InputSearch>
+      </div>
+      </div>
       <Footer></Footer>
       </div>
+  
   
      
     </section>
