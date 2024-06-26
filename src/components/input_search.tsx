@@ -4,8 +4,7 @@ import clear from "../images/close.png"
 import editIcon from "../images/editar.png"
 import down_unclicked from "../images/down-gray.png"
 import down_active from "../images/down-black.png"
-import { useCallback, useEffect, useState } from "react"
-
+import {useEffect, useState } from "react"
 
 
 const InputSearch = ()=>{
@@ -21,13 +20,15 @@ const InputSearch = ()=>{
     let items_left:boolean[] = []
     let items_done:string[] = []
     
-    const [inputText,setInputText] = useState('')
+    const [inputText,setInputText] = useState<string>('')
     const [data,setData] = useState<any>([])
     const [dataFiltered,setDataFiltered]= useState<Data_types[]>([])
     const [count,setCount] = useState<number>(items_done.length)
     const [filter,setFilter] = useState<string|boolean>('all')
     const [borderClass,setBorderClass]= useState<string>('all')
-    const [edit,setEdit]= useState({state:false,id:''})
+    const [edit,setEdit]= useState<boolean>(false)
+    const [id,setId] = useState<string>('')
+    const [activeButton,setActiveButton]= useState<boolean>(false)
 
 
     const mydata = [
@@ -50,21 +51,19 @@ const InputSearch = ()=>{
 
 
     useEffect(()=>{
-    
-    for(const i in data){
-        if(data[i]['isDone']){
-            items_done.push(data[i]['id'])
-        }
-    }
+
     setCount(items_done.length)
        
-    if(filter !== 'all')return setDataFiltered(data.filter((its:Data_types)=>
+    if(filter !== 'all'){
+       setActiveButton(true)
+       return setDataFiltered(data.filter((its:Data_types)=>
         {return its.isDone == filter}))
+    }
         return  setDataFiltered(data)
 
-      
+     
 
-    },[items_done,filter])
+    },[items_done,filter,data])
 
    
 
@@ -106,36 +105,26 @@ const InputSearch = ()=>{
 
     }
 
-    const AddList=useCallback(()=>{
+    const AddList=()=>{
 
         if(inputText === '')return
 
         let randomId = Math.random().toString(36).substring(2,9)
         
-       for(const i in data){
+        const search = data.find((item:any) =>item.id != id && item.title.toLowerCase() === inputText.toLowerCase())
 
-        if(data[i]['id'] !== edit.id && data[i]['title'].toLowerCase() === inputText.toLowerCase())return alert("Tarefa já existe!")
+        if(search)return alert("Tarefa já existe!")
+
+       if(!edit)return setData((prev:Data_types[])=>[{id:randomId,title:inputText,isDone:false},...prev])
+
+            setData((prev:Data_types[])=>prev.map(its=>its.id == id ?{...its,title:inputText}:its))
+            setEdit(false)
+            setId('')
         
-       }
-       if(!edit.state){
-
-       while (data.some((item:Data_types)=>item.id === randomId)) {
-        randomId = Math.random().toString(36).substring(2, 9)
-       }
-       
-       setData((prev:Data_types[])=>[{id:randomId,title:inputText,isDone:false},...prev])
-        
-        }
-       
-            setData((prev:Data_types[])=>prev.map(its=>its.id == edit.id ?{...its,title:inputText}:its))
-            setEdit({state:false,id:''})
-        
-
-
-    },[inputText,data])
+    }
 
     const showSearch=()=>{
-    
+        
 
         if(data.length>0){
 
@@ -147,7 +136,7 @@ const InputSearch = ()=>{
 
         }
         if(count>1){
-  
+            setActiveButton(false)
             setData((prev:Data_types)=>
                 prev.map((it:Data_types)=>
                     it?{...it,isDone:false}:it
@@ -163,13 +152,11 @@ const InputSearch = ()=>{
         items_done.forEach((ids:string)=>{
             
             setData((prev:Data_types)=>
-                prev.filter((it:Data_types)=>
-                    {return it.id != ids}
-                )
-            )   
+                prev.filter((it: Data_types) => it.id != ids)
+            )
 
         })    
-        
+        setActiveButton(false)
     }
 
     const handleFilter=(filterName:string|boolean,Class:string)=>{
@@ -185,13 +172,16 @@ const InputSearch = ()=>{
 
     }
 
-    const handleEdit=(id:string,nameEdit:string)=>{
+    const handleEdit = (ID:string,nameEdit:string)=>{
 
-        if(!edit.state){
-            setEdit({state:true,id:id})
+
+        if(!edit){    
+         setEdit(true)
+         setId(ID)
             setInputText(nameEdit)
         }else{
-            setEdit({state:false,id:''})
+            setEdit(false)
+            setId('')
             setInputText('')
         }
 
@@ -200,15 +190,16 @@ const InputSearch = ()=>{
 return(
     
     <div className="inputContainer_Master">
-        <div className="inputContainer">{<img onClick={showSearch} className={'down_arrow'} src={count >1 ? down_active : down_unclicked}></img>}<input value={inputText} onKeyDown={e=>e.key == "Enter" &&  AddList()} onChange={(e:any)=>setInputText(e.target.value)} placeholder="What needs to be done?"></input></div>
+        <div className="inputContainer">{<img onClick={showSearch} className={'down_arrow'} src={count >1 || activeButton? down_active : down_unclicked}></img>}<input value={inputText} onKeyDown={e=>e.key == "Enter" &&  AddList()} onChange={(e:any)=>setInputText(e.target.value)} placeholder="What needs to be done?"></input></div>
         {data.length >0 ? <><div className={`container_search_select `} style={{borderTop:dataFiltered[0] ?'2px solid #f0f0f0':'3px solid #e2e2e2'}}>
            <ul className="search_li">
                 {dataFiltered && dataFiltered.map((items:Data_types)=>{
                     !items.isDone && items_left.push(items.isDone)
+                    items.isDone && items_done.push(items.id)
                 
                     return(
                         <>
-                         <li  className={`${items.id, items.isDone && 'isDone'}`} style={edit.id === items.id ?{backgroundColor:'#dcdcdc'}:{}}><img className="done_undone" onClick={()=>HandleChange('done_undone',items.id,!items.isDone)} src={items.isDone ? check : uncheck}></img>{<div style={{width:'100%'}} onDoubleClick={()=>handleEdit(items.id,items.title)}>{`${items.title}`}</div>}<img onClick={()=>edit.id != items.id &&HandleChange('remove',items.id,null)} className={edit.id == items.id ?"edit" :"clear"} src={edit.id == items.id ?editIcon :clear}></img></li>                   
+                         <li  className={`${items.id, items.isDone && 'isDone'}`} style={id === items.id ?{backgroundColor:'#dcdcdc'}:{}}><img className="done_undone" onClick={()=>HandleChange('done_undone',items.id,!items.isDone)} src={items.isDone ? check : uncheck}></img>{<div style={{width:'100%'}} onDoubleClick={()=>handleEdit(items.id,items.title)}>{`${items.title}`}</div>}<img onClick={()=>id != items.id &&HandleChange('remove',items.id,null)} className={id == items.id ?"edit" :"clear"} src={id == items.id ?editIcon :clear}></img></li>                   
                         </>
                     )
                 })}

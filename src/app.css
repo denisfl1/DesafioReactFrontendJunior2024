@@ -178,27 +178,24 @@ li{
     background-color: #EDEDED;
     width: 100%;
     padding: 1px 8px 25px 8px;
-    /*padding: top right bottom left;*/
     border-top-left-radius:90px ;
     border-top-right-radius:90px ;
     border-bottom-left-radius:65px ;
     border-bottom-right-radius:65px ;
     display: flex;
     justify-content: center;
-    z-index:0;
+
 
 }
 
 .todoBackground2{
     background-color: #E6E6E6;
     height: 85%;
-      /*padding: top right bottom left;*/
     padding: 1px 3px 20px 3px;
     border-top-left-radius:10px ;
     border-top-right-radius:10px ;
     border-bottom-left-radius:66px ;
     border-bottom-right-radius:66px ;
-    z-index: 1;
 
 }
 
