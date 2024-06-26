@@ -70,18 +70,18 @@ const InputSearch = ()=>{
     useEffect(()=>{
 
 
-        // (async()=>{
+        (async()=>{
 
-        //     await fetch('https://my-json-server.typicode.com/EnkiGroup/DesafioReactFrontendJunior2024/todos').then(
-        //         response=>response.json().then(
-        //         DATAs=>setData(DATAs)).catch(
-        //         error=>console.log(error))
-        //     )
+            await fetch('https://my-json-server.typicode.com/EnkiGroup/DesafioReactFrontendJunior2024/todos').then(
+                response=>response.json().then(
+                DATAs=>setData(DATAs)).catch(
+                error=>console.log(error))
+            )
 
-        // })()
+        })()
        
 
-      setData(mydata)
+    
 
     },[])
 
